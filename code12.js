@@ -72,7 +72,7 @@ function initJSON()
 {
     var request = new  XMLHttpRequest();
 //  request.open("GET", "triangle.json");
-    request.open("GET", "teapot.json");    
+    request.open("GET", "bunny.json");    
     request.onreadystatechange =
       function () {
           if (request.readyState == 4) {
