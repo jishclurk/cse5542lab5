@@ -394,8 +394,8 @@ function initBuffers() {
 
             sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(z);
             sphereNormals.push(x); sphereNormals.push(y); sphereNormals.push(z);
-            sphereUV.push(0.5 + (Math.atan2(-z, -x) / (2 * Math.PI)));
-            sphereUV.push(0.5 - (Math.asin(-y) / Math.PI));
+            sphereUV.push(0.5 + (Math.atan2(z, x) / (2 * Math.PI)));
+            sphereUV.push(0.5 - (Math.asin(z) / Math.PI));
         }
     }
 
