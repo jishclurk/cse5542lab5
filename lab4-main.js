@@ -1033,7 +1033,7 @@ function drawScene() {
     //drawEnvironment();
     //drawPerson();
 
-    draw_teapot();
+    draw_sphere();
     //draw_leaf_sphere();
 }
 
