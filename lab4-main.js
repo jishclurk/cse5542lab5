@@ -494,6 +494,7 @@ var teapotVertexIndexBuffer;
 var teapotLoaded = false;
 
 function handleLoadedTeapot(teapotData) {
+    console.log("in handle");
     teapotVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(teapotData.vertexPositions), gl.STATIC_DRAW);
@@ -518,6 +519,8 @@ function handleLoadedTeapot(teapotData) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(teapotData.indices), gl.STATIC_DRAW);
     teapotVertexIndexBuffer.itemSize = 1;
     teapotVertexIndexBuffer.numItems = teapotData.indices.length;
+
+    console.log(teapotData);
 
     teapotLoaded = true;
     drawScene();
