@@ -365,7 +365,7 @@ function initBuffers() {
     var sphereUV = [];
     var sphereNormals = [];
     var radius = 0.5;
-    var numSlices = 20;
+    var numSlices = 30;
     var numStacks = 20;
     var radians = (2 * Math.PI) / numSlices;
     var x = 0.0;
@@ -394,8 +394,8 @@ function initBuffers() {
 
             sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(z);
             sphereNormals.push(x); sphereNormals.push(y); sphereNormals.push(z);
-            sphereUV.push(0.5 + (Math.atan2(-4 * y, -4 * x) / (2 * Math.PI)));
-            sphereUV.push(0.5 - (Math.asin(-4 * z) / Math.PI));
+            sphereUV.push(0.5 + (Math.atan2(-2 * y, -2 * x) / (2 * Math.PI)));
+            sphereUV.push(0.5 - (Math.asin(-2 * z) / Math.PI));
         }
     }
 
