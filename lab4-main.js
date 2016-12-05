@@ -372,7 +372,7 @@ function initBuffers() {
     var y = 0.0;
     var z = 0.0;
 
-    console.log("he456y");
+
     // Push Top and Bottom vertices
     sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(radius);
     sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(-radius);
@@ -934,10 +934,10 @@ function drawScene() {
 
 
     // Draw our scene
-    //drawEnvironment();
-    //drawPerson();
+    drawEnvironment();
+    drawPerson();
 
-    draw_leaf_sphere();
+    //draw_leaf_sphere();
 }
 
 
@@ -1029,19 +1029,22 @@ function drawEnvironment() {
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-1.0, 0.7, 0.0]);
     mMatrix = mat4.scale(mMatrix, [1.0, 0.75, 1.0]);
-    draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
+    //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
+    draw_leaf_sphere();
 
     mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-0.6, 1.0, 0.0]);
     mMatrix = mat4.scale(mMatrix, [1.0, 0.75, 1.0]);
-    draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
+    //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
+    draw_leaf_sphere();
 
     mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-0.5, 0.6, 0.0]);
     mMatrix = mat4.scale(mMatrix, [0.9, 0.65, 1.0]);
-    draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
+    //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
+    draw_leaf_sphere();
 
     popMatrix();
     mMatrix = popMatrix();
