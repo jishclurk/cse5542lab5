@@ -459,7 +459,7 @@ function initTextures() {
     leafTexture = gl.createTexture();
     leafTexture.image = new Image();
     leafTexture.image.onload = function () { handleTextureLoaded(leafTexture); }
-    leafTexture.image.src = "earth.png";
+    leafTexture.image.src = "leaf.png";
 }
 
 function handleTextureLoaded(texture) {
