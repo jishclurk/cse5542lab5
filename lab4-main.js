@@ -1029,24 +1029,27 @@ function drawEnvironment() {
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-1.0, 0.7, 0.0]);
     mMatrix = mat4.rotate(mMatrix, degToRad(270), [0, 0, 1]);   // Left most sphere
-    mMatrix = mat4.scale(mMatrix, [1.0, 0.75, 1.0]);
+    mMatrix = mat4.scale(mMatrix, [0.75, 1.0, 1.0]);
     //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
 
     mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-0.6, 1.0, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   //  most sphere
-    mMatrix = mat4.scale(mMatrix, [1.0, 0.75, 1.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   // Top most sphere
+    mMatrix = mat4.scale(mMatrix, [0.75, 1.0, 1.0]);
     //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
 
     mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-0.5, 0.6, 0.0]);
-    mMatrix = mat4.scale(mMatrix, [0.9, 0.65, 1.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   // Right most sphere
+    mMatrix = mat4.scale(mMatrix, [0.65, 0.9, 1.0]);
     //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
+
+    console.log("asda");
 
     popMatrix();
     mMatrix = popMatrix();
