@@ -36,6 +36,7 @@ var matShininessBuffer;
 
 /* Texture object for leaves on tree */
 var leafTexture;
+var textureLoaded = false;
 
 var mMatrix = mat4.create();            // model matrix
 var vMatrix = mat4.create();            // view matrix
@@ -469,6 +470,57 @@ function handleTextureLoaded(texture) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
     gl.bindTexture(gl.TEXTURE_2D, null);
+    textureLoaded = true;
+    drawScene();
+}
+
+function initJSON() {
+    var request = new XMLHttpRequest();
+    request.open("GET", "teapot.json");
+    request.onreadystatechange =
+      function () {
+          if (request.readyState == 4) {
+              handleLoadedTeapot(JSON.parse(request.responseText));
+          }
+      }
+    request.send();
+}
+
+
+var teapotVertexPositionBuffer;
+var teapotVertexNormalBuffer;
+var teapotVertexTextureCoordBuffer;
+var teapotVertexIndexBuffer;
+var teapotLoaded = false;
+
+function handleLoadedTeapot(teapotData) {
+    teapotVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(teapotData.vertexPositions), gl.STATIC_DRAW);
+    teapotVertexPositionBuffer.itemSize = 3;
+    teapotVertexPositionBuffer.numItems = teapotData.vertexPositions.length / 3;
+
+    teapotVertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(teapotData.vertexNormals), gl.STATIC_DRAW);
+    teapotVertexNormalBuffer.itemSize = 3;
+    teapotVertexNormalBuffer.numItems = teapotData.vertexNormals.length / 3;
+
+    teapotVertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexTextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(teapotData.vertexTextureCoords),
+		  gl.STATIC_DRAW);
+    teapotVertexTextureCoordBuffer.itemSize = 2;
+    teapotVertexTextureCoordBuffer.numItems = teapotData.vertexTextureCoords.length / 2;
+
+    teapotVertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotVertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(teapotData.indices), gl.STATIC_DRAW);
+    teapotVertexIndexBuffer.itemSize = 1;
+    teapotVertexIndexBuffer.numItems = teapotData.indices.length;
+
+    teapotLoaded = true;
+    drawScene();
 }
 
 
@@ -863,6 +915,36 @@ function draw_leaf_sphere() {
     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
+function draw_teapot() {
+    // Need to calculate normal matrix for each shape drawn
+    mat4.identity(nMatrix);
+    nMatrix = mat4.multiply(nMatrix, vMatrix);
+    nMatrix = mat4.multiply(nMatrix, mMatrix);
+    nMatrix = mat4.inverse(nMatrix);
+    nMatrix = mat4.transpose(nMatrix);
+
+    setMatrixUniforms();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, matAmbientBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexAmbientCoefAttribute, matAmbientBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, matDiffuseBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexDiffuseCoefAttribute, matDiffuseBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, matSpecularBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexSpecularCoefAttribute, matSpecularBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, matShininessBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexShininessAttribute, matShininessBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexNormalBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, teapotVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, teapotVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexUVAttribute, teapotVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.uniform1i(shaderProgram.useTextureUniform, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotVertexIndexBuffer);
+    gl.drawElements(gl.TRIANGLES, teapotVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+}
+
 /*
     draw_cylinder function
         Creates and draws a cylinder object that is transformed using the matrix parameter, 
@@ -909,6 +991,9 @@ function draw_cylinder(color, intensity) {
         our movable object.
 */
 function drawScene() {
+    if (!textureLoaded || !teapotLoaded)
+        return;
+
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -934,9 +1019,10 @@ function drawScene() {
 
 
     // Draw our scene
-    drawEnvironment();
-    drawPerson();
+    //drawEnvironment();
+    //drawPerson();
 
+    draw_teapot();
     //draw_leaf_sphere();
 }
 
