@@ -491,6 +491,7 @@ var teapotVertexPositionBuffer;
 var teapotVertexNormalBuffer;
 var teapotVertexTextureCoordBuffer;
 var teapotVertexIndexBuffer;
+var teapotVertexColorBuffer;
 var teapotLoaded = false;
 
 function handleLoadedTeapot(teapotData) {
@@ -520,7 +521,10 @@ function handleLoadedTeapot(teapotData) {
     teapotVertexIndexBuffer.itemSize = 1;
     teapotVertexIndexBuffer.numItems = teapotData.indices.length;
 
-    teapotVertexColorBuffer = teapotVertexNormalBuffer;
+    teapotVertexColorBuffer = gl.createBuffer();
+    teapotVertexColorBuffer.itemSize = 4;
+    teapotVertexColorBuffer.numItems = (teapotData.vertexPositions.length * 4) / 3
+    setColorArray(teapotVertexColorBuffer, colorEnum.WHITE);
 
     teapotLoaded = true;
     drawScene();
