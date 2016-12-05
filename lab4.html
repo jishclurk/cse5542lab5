@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>Josh Clark Lab 4</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+<!--  ************** Fragment Shader ************* --> 
+<script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+    precision mediump int; 
+
+    uniform mat4 uMMatrix; 
+    uniform mat4 uVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat4 uNMatrix; 
+
+    uniform vec4 light_pos; 
+    uniform vec4 light_ambient; 
+    uniform vec4 light_diffuse; 
+    uniform vec4 light_specular;
+
+    uniform int useTexture;
+    uniform sampler2D myTexture;
+
+    varying vec4 eye_pos;  //vertex position in eye space 
+    varying vec3 v_normal;  // vertex normal
+    varying vec4 vColor; 
+    varying vec2 texCoord;
+    varying vec4 ambient_coef;
+    varying vec4 diffuse_coef;
+    varying vec4 specular_coef;
+    varying float mat_shininess;
+
+    void main(void) {
+        // Convert light from world to eye space
+        vec4 light_pos_in_eye = uVMatrix * light_pos;   
+
+        // Calculate vector from light to fragment
+        vec3 light_vector = normalize(vec3(light_pos_in_eye - eye_pos)); 
+
+        // Calculate vector from fragment to eye (eye is always at 0,0 in eye space)
+        vec3 eye_vector = normalize(-vec3(eye_pos));
+
+        // Renormalize just to be sure
+        vec3 normal = normalize(v_normal);
+
+        // Calculate ambient portion
+        vec4 ambient = ambient_coef * light_ambient; 
+        
+        // Calculate cosine of angle between light vector and the normal
+        float ndotl = max(dot(normal, light_vector), 0.0); 
+        
+        // Calculate the diffuse light portion
+        vec4 diffuse = diffuse_coef * light_diffuse * ndotl;
+
+        // Calculate the light vector reflected around the normal
+        vec3 R = normalize(vec3(reflect(-light_vector,  normal))); 
+
+        // Calculate cosine of angle between reflection and eye vectors
+        float rdotv = max(dot(R, eye_vector), 0.0);  
+
+        // Calculate the specular portion
+        vec4 specular;  
+        if (ndotl > 0.0) 
+            specular = specular_coef * light_specular * pow(rdotv, mat_shininess); 
+        else
+            specular = vec4(0,0,0,1); 
+
+        if (useTexture <= 0) 
+        {
+            // Average the fragment color with the light calculated
+	        gl_FragColor = (0.5*vColor + 0.5*(ambient+diffuse+specular));
+        }
+        else
+        {
+            vec4 texColor = texture2D(myTexture, texCoord);
+            gl_FragColor = (ambient + diffuse) * texColor + specular;
+        }
+
+    }
+</script>
+
+<!--  ************** Vertex Shader ************* --> 
+<script id="shader-vs" type="x-shader/x-vertex">
+
+    precision mediump float;
+    precision mediump int; 
+    attribute vec3 aVertexPosition;
+    attribute vec3 aVertexNormal;
+    attribute vec2 aUVCoords;
+    attribute vec4 aVertexColor;
+    attribute vec4 aAmbientCoef;
+    attribute vec4 aDiffuseCoef;
+    attribute vec4 aSpecularCoef;
+    attribute float aShininess; 
+
+    uniform mat4 uMMatrix; 
+    uniform mat4 uVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat4 uNMatrix; 
+
+    uniform vec4 light_pos; 
+    uniform vec4 light_ambient; 
+    uniform vec4 light_diffuse; 
+    uniform vec4 light_specular;
+
+    uniform int useTexture;
+    uniform sampler2D myTexture;
+
+    varying vec4 eye_pos;  //vertex position in eye space 
+    varying vec3 v_normal;  // vertex normal
+    varying vec4 vColor; 
+    varying vec2 texCoord;
+    varying vec4 ambient_coef;
+    varying vec4 diffuse_coef;
+    varying vec4 specular_coef;
+    varying float mat_shininess;
+
+    void main(void) {
+
+        // transform normal from local to eye space: normal matrix is the inverse transpose of the modelview matrix 
+        v_normal = normalize(vec3(uNMatrix*vec4(aVertexNormal,1.0)));
+
+        // transform the vertex position to eye space 
+        eye_pos = uVMatrix*uMMatrix*vec4(aVertexPosition, 1.0);
+
+        // Pass the attributes to the fragment
+        ambient_coef = aAmbientCoef;
+        diffuse_coef = aDiffuseCoef;
+        specular_coef = aSpecularCoef;
+        mat_shininess = aShininess; 
+
+        vColor = aVertexColor;
+
+        texCoord = aUVCoords;
+
+        gl_Position = uPMatrix*uVMatrix*uMMatrix*vec4(aVertexPosition, 1.0);
+
+    }
+</script>
+
+
+<script type="text/javascript" src="shaders_setup.js"></script>
+<script type="text/javascript" src="lab4-main.js"></script>
+
+
+</head>
+
+
+<body onload="webGLStart();">
+    <canvas id="code03-canvas"style="border:none;"width="700"height="700"></canvas>
+
+
+    <h4>
+        Click on the left mouse button and move the cursor left/right to rotate the scene.
+    </h4>
+    <h4>
+        Click on the right mouse button and move the cursor up/down to scale the scene.
+    </h4>
+
+    <button  onclick="redraw()"> Reset </button>
+
+
+    <table border="0">
+        <tr>
+            <td align="center" style="padding:20px;">
+                <h4>Select Part to Rotate</h4>
+
+                <!-- Place the selector buttons in a table so they can be formatted and placed easily -->
+                <table border="0">
+                    <tr>
+                        <td colspan="4" align="center">
+                            <button onclick="selectBodyPart(personEnum.BODY)"> Whole Body </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <button onclick="selectBodyPart(personEnum.LEFTFOREARM)"> Left Forearm </button>
+                        </td>
+                        <td align="center">
+                            <button onclick="selectBodyPart(personEnum.LEFTARM)"> Left Arm </button>
+                        </td>
+                        <td align="center">
+                            <button onclick="selectBodyPart(personEnum.RIGHTARM)"> Right Arm </button>
+                        </td>
+                        <td align="center">
+                            <button onclick="selectBodyPart(personEnum.RIGHTFOREARM)"> Right Forearm </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right">
+                            <button onclick="selectBodyPart(personEnum.LEFTLEG)"> Left Leg </button>
+                        </td>
+                        <td colspan="2" align="left">
+                            <button onclick="selectBodyPart(personEnum.RIGHTLEG)"> Right Leg </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right">
+                            <button onclick="selectBodyPart(personEnum.LEFTFOOT)"> Left Foot </button>
+                        </td>
+                        <td colspan="2" align="left">
+                            <button onclick="selectBodyPart(personEnum.RIGHTFOOT)"> Right Foot </button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td align="center" style="padding:20px;">
+                <h3>Camera Movement</h3>
+                <table border="0">
+                    <tr>
+                        <td colspan="4" align="center">
+                            <button onclick="moveCameraUp();">&#8593;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <button onclick="panRight();">Tilt Left</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="moveCameraLeft();">&#8592;</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="moveCameraRight();">&#8594;</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="panLeft();">Tilt Right</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" align="center">
+                            <button onclick="moveCameraDown();">&#8595;</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td align="center" style="padding:20px;">
+                <h3>COI Movement</h3>
+                <table border="0">
+                    <tr>
+                        <td colspan="4" align="center">
+                            <button onclick="moveCOIUp();">&#8593;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <button onclick="moveCOILeft();">&#8592;</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="moveCOIRight();">&#8594;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" align="center">
+                            <button onclick="moveCOIDown();">&#8595;</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td align="center" style="padding:20px;">
+                <h3>Light Position</h3>
+                <table border="0">
+                    <tr>
+                        <td colspan="4" align="center">
+                            <button onclick="lightUp();">&#8593;</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="lightForward();">Forward</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="lightIntensityUp();">Intensity +</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <button onclick="lightLeft();">&#8592;</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="lightRight();">&#8594;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" align="center">
+                            <button onclick="lightDown();">&#8595;</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="lightBackward();">Backward</button>
+                        </td>
+                        <td align="center">
+                            <button onclick="lightIntensityDown();">Intensity -</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>
+

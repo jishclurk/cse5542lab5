@@ -47,6 +47,7 @@
         gl.linkProgram(shaderProgram);
 
         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            console.error(gl.getProgramInfoLog(shaderProgram));
             alert("Could not initialise shaders");
         }
 
