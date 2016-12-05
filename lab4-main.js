@@ -372,7 +372,6 @@ function initBuffers() {
     var y = 0.0;
     var z = 0.0;
 
-    console.log(numSlices);
 
     // Push Top and Bottom vertices
     sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(radius);
