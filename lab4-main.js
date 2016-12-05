@@ -1530,6 +1530,7 @@ function webGLStart() {
     initBuffers();
 
     initTextures();
+    initJSON();
 
     // Set the clear color to be a sky blue for our scene
     gl.clearColor(0.0, 0.0, 1.0, 0.3);
@@ -1570,7 +1571,6 @@ function webGLStart() {
 
     mvLeftFootMatrix = mat4.create();
     mat4.identity(mvLeftFootMatrix);
-
 
     currentPart = personEnum.BODY;
     drawScene();
