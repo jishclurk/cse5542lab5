@@ -926,6 +926,8 @@ function draw_leaf_sphere() {
 
 function draw_teapot() {
     // Need to calculate normal matrix for each shape drawn
+
+    setLightCoefArrays(teapotVertexPositionBuffer, lightCoefEnum.MEDIUM);
     mat4.identity(nMatrix);
     nMatrix = mat4.multiply(nMatrix, vMatrix);
     nMatrix = mat4.multiply(nMatrix, mMatrix);
@@ -1033,7 +1035,7 @@ function drawScene() {
     //drawEnvironment();
     //drawPerson();
 
-    draw_sphere();
+    draw_teapot();
     //draw_leaf_sphere();
 }
 
