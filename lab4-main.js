@@ -1028,7 +1028,7 @@ function drawEnvironment() {
     mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-1.0, 0.7, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(180), [0, 0, 1]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(270), [0, 0, 1]);   // Left most sphere
     mMatrix = mat4.scale(mMatrix, [1.0, 0.75, 1.0]);
     //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
@@ -1036,6 +1036,7 @@ function drawEnvironment() {
     mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-0.6, 1.0, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   //  most sphere
     mMatrix = mat4.scale(mMatrix, [1.0, 0.75, 1.0]);
     //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
