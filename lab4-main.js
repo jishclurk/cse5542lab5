@@ -520,7 +520,7 @@ function handleLoadedTeapot(teapotData) {
     teapotVertexIndexBuffer.itemSize = 1;
     teapotVertexIndexBuffer.numItems = teapotData.indices.length;
 
-    console.log(teapotData);
+    teapotVertexColorBuffer = teapotVertexNormalBuffer;
 
     teapotLoaded = true;
     drawScene();
