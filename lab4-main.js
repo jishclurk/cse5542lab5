@@ -372,7 +372,7 @@ function initBuffers() {
     var y = 0.0;
     var z = 0.0;
 
-    console.log("hey");
+    console.log("he456y");
     // Push Top and Bottom vertices
     sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(radius);
     sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(-radius);
@@ -396,7 +396,7 @@ function initBuffers() {
             sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(z);
             sphereNormals.push(x); sphereNormals.push(y); sphereNormals.push(z);
             sphereUV.push(0.5 + (Math.atan2(-2 * x, -2 * y) / (2 * Math.PI)));
-            sphereUV.push(0.5 - 0.5 * (-2 * z));//(Math.asin(-2 * z) / Math.PI));
+            sphereUV.push(0.5 - (Math.asin(-2 * z) / Math.PI));
         }
     }
 
