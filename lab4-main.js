@@ -523,7 +523,7 @@ function handleLoadedTeapot(teapotData) {
 
     teapotVertexColorBuffer = gl.createBuffer();
     teapotVertexColorBuffer.itemSize = 4;
-    teapotVertexColorBuffer.numItems = (teapotData.vertexPositions.length * 4) / 3
+    teapotVertexColorBuffer.numItems = (teapotData.vertexPositions.length * 4) / 3;
     setColorArray(teapotVertexColorBuffer, colorEnum.WHITE);
 
     teapotLoaded = true;
