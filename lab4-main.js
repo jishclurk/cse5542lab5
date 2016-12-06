@@ -514,17 +514,22 @@ function find_range(positions) {
     if (ymax - ymin < minRange) minRange = ymax - ymin;
     if (zmax - zmin < minRange) minRange = zmax - zmin;
 
-    for (i = 0; i < positions.length; i++) {
-        positions[i] = positions[i] / minRange;
-    }
 
     console.log("*****xmin = " + xmin + "xmax = " + xmax);
     console.log("*****ymin = " + ymin + "ymax = " + ymax);
     console.log("*****zmin = " + zmin + "zmax = " + zmax);
+
+    return minRange;
 }
 
 function handleLoadedTeapot(teapotData) {
     
+    var range = find_range(teapotData.vertexPositions);
+
+    for (i = 0; i < teapotData.vertexPositions.length; i++) {
+        teapotData.vertexPositions[i] = teapotData.vertexPositions[i] / range;
+    }
+
     teapotVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(teapotData.vertexPositions), gl.STATIC_DRAW);
@@ -555,7 +560,7 @@ function handleLoadedTeapot(teapotData) {
     teapotVertexColorBuffer.numItems = (teapotData.vertexPositions.length * 4) / 3;
     setColorArray(teapotVertexColorBuffer, colorEnum.WHITE);
 
-    find_range(teapotData.vertexPositions);
+    
 
     teapotLoaded = true;
     drawScene();
