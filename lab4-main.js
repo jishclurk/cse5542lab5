@@ -555,7 +555,7 @@ function handleLoadedTeapot(teapotData) {
     teapotVertexColorBuffer.numItems = (teapotData.vertexPositions.length * 4) / 3;
     setColorArray(teapotVertexColorBuffer, colorEnum.WHITE);
 
-    console.log(teapotData);
+    find_range(teapotData.vertexPositions);
 
     teapotLoaded = true;
     drawScene();
