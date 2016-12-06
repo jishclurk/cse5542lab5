@@ -494,6 +494,35 @@ var teapotVertexIndexBuffer;
 var teapotVertexColorBuffer;
 var teapotLoaded = false;
 
+function find_range(positions) {
+    console.log("hello!");
+    xmin = xmax = positions[0];
+    ymin = ymax = positions[1];
+    zmin = zmax = positions[2];
+    for (i = 0; i < positions.length / 3; i++) {
+        if (positions[i * 3] < xmin) xmin = positions[i * 3];
+        if (positions[i * 3] > xmax) xmax = positions[i * 3];
+
+        if (positions[i * 3 + 1] < ymin) ymin = positions[i * 3 + 1];
+        if (positions[i * 3 + 1] > ymax) ymax = positions[i * 3 + 1];
+
+        if (positions[i * 3 + 2] < zmin) zmin = positions[i * 3 + 2];
+        if (positions[i * 3 + 2] > zmax) zmax = positions[i * 3 + 2];
+    }
+
+    var minRange = xmax - xmin;
+    if (ymax - ymin < minRange) minRange = ymax - ymin;
+    if (zmax - zmin < minRange) minRange = zmax - zmin;
+
+    for (i = 0; i < positions.length; i++) {
+        positions[i] = positions[i] / minRange;
+    }
+
+    console.log("*****xmin = " + xmin + "xmax = " + xmax);
+    console.log("*****ymin = " + ymin + "ymax = " + ymax);
+    console.log("*****zmin = " + zmin + "zmax = " + zmax);
+}
+
 function handleLoadedTeapot(teapotData) {
     
     teapotVertexPositionBuffer = gl.createBuffer();
