@@ -1261,7 +1261,7 @@ function drawEnvironment() {
     */
 
     // Draw the tree trunk
-    mMatrix = popMatrix();
+    //mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.scale(mMatrix, [0.25, 1.5, 0.25]);
     mMatrix = mat4.translate(mMatrix, [-3.0, -0.1, 0.0]);
