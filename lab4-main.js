@@ -425,6 +425,7 @@ function initBuffers() {
     }
     sphereIndices.push(1); sphereIndices.push(((numStacks - 2) * numSlices) + 2); sphereIndices.push(((numStacks - 1) * numSlices) + 1);
 
+    console.log(sphereUV);
 
     // Create the sphere buffers
     sphereVertexPositionBuffer = gl.createBuffer();
@@ -1182,11 +1183,10 @@ function drawScene() {
     gl.uniform1i(shaderProgram.cubeMapTextureUniform, 1);
 
     // Draw our scene
-    drawEnvironment();
-    drawPerson();
+    //drawEnvironment();
+    //drawPerson();
 
-    //draw_teapot();
-    //draw_leaf_sphere();
+    draw_leaf_sphere();
 }
 
 
@@ -1337,7 +1337,6 @@ function drawPerson() {
     pushMatrix(mMatrix);
 
     mMatrix = mat4.translate(mMatrix, [1.3, 0.0, 0.0]);
-    console.log(1.3);
     draw_teapot();
 
     mMatrix = popMatrix();
