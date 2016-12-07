@@ -557,7 +557,7 @@ function handleCubemapTextureLoaded(texture) {
     gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
 		  texture.front);
 
-    //gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
     cubemapLoaded = true;
     drawScene();
 }
@@ -1181,7 +1181,6 @@ function drawScene() {
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubemapTexture);
     gl.uniform1i(shaderProgram.cubeMapTextureUniform, 1);
 
-    gl.activeTexture(null);
 
     // Draw our scene
     drawEnvironment();
