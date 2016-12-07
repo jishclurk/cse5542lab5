@@ -42,6 +42,7 @@ var mMatrix = mat4.create();            // model matrix
 var vMatrix = mat4.create();            // view matrix
 var pMatrix = mat4.create();            // projection matrix 
 var nMatrix = mat4.create();            // normal matrix
+var v2wMatrix = mat4.create();          // eye to world matrix
 var Z_angle = 0.0;                      // Angle to rotate due to mouse movement
 var globalScaling = [0.75, 0.75, 0.75]; // Angle to scale due to mouse movement
 
@@ -457,6 +458,107 @@ function initBuffers() {
     setColorArray(sphereVertexColorBuffer, colorEnum.BLACK);
 }
 
+
+var cubemapTexture;
+var cubemapLoaded = false;
+
+function initCubeMap() {
+    var loaded = [];
+    for (var i = 0; i < 6; i++) {
+        loaded.push(false);
+    }
+
+    cubemapTexture = gl.createTexture();
+    cubemapTexture.top = new Image();
+    cubemapTexture.top.onload = function () {
+        loaded[0] = true;
+        for (var i = 0; i < 6; i++) {
+            if (!loaded[i]) return;
+        }
+        handleCubemapTextureLoaded(cubemapTexture);
+    }
+    cubemapTexture.top.src = "top.png";
+
+    cubemapTexture.bottom = new Image();
+    cubemapTexture.bottom.onload = function () {
+        loaded[1] = true;
+        for (var i = 0; i < 6; i++) {
+            if (!loaded[i]) return;
+        }
+        handleCubemapTextureLoaded(cubemapTexture);
+    }
+    cubemapTexture.bottom.src = "bottom.png";
+
+    cubemapTexture.left = new Image();
+    cubemapTexture.left.onload = function () {
+        loaded[2] = true;
+        for (var i = 0; i < 6; i++) {
+            if (!loaded[i]) return;
+        }
+        handleCubemapTextureLoaded(cubemapTexture);
+    }
+    cubemapTexture.left.src = "left.png";
+
+    cubemapTexture.right = new Image();
+    cubemapTexture.right.onload = function () {
+        loaded[3] = true;
+        for (var i = 0; i < 6; i++) {
+            if (!loaded[i]) return;
+        }
+        handleCubemapTextureLoaded(cubemapTexture);
+    }
+    cubemapTexture.right.src = "right.png";
+
+    cubemapTexture.front = new Image();
+    cubemapTexture.front.onload = function () {
+        loaded[4] = true;
+        for (var i = 0; i < 6; i++) {
+            if (!loaded[i]) return;
+        }
+        handleCubemapTextureLoaded(cubemapTexture);
+    }
+    cubemapTexture.front.src = "front.png";
+
+    cubemapTexture.back = new Image();
+    cubemapTexture.back.onload = function () {
+        loaded[5] = true;
+        for (var i = 0; i < 6; i++) {
+            if (!loaded[i]) return;
+        }
+        handleCubemapTextureLoaded(cubemapTexture);
+    }
+    cubemapTexture.back.src = "back.png";
+
+    console.log("loading cubemap texture....")
+}
+
+function handleCubemapTextureLoaded(texture) {
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.right);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.left);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.top);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.bottom);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.back);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.front);
+
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+    cubemapLoaded = true;
+    drawScene();
+}
+
+
 function initTextures() {
     leafTexture = gl.createTexture();
     leafTexture.image = new Image();
@@ -473,6 +575,8 @@ function handleTextureLoaded(texture) {
     textureLoaded = true;
     drawScene();
 }
+
+
 
 function initJSON() {
     var request = new XMLHttpRequest();
@@ -576,6 +680,7 @@ function setMatrixUniforms() {
     gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
     gl.uniformMatrix4fv(shaderProgram.nMatrixUniform, false, nMatrix);
+    gl.uniformMatrix4fv(shaderProgram.v2wMatrixUniform, false, v2wMatrix);
 }
 
 /*
@@ -949,9 +1054,6 @@ function draw_leaf_sphere() {
     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexUVBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexUVAttribute, sphereVertexUVBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, leafTexture);
-    gl.uniform1i(shaderProgram.textureUniform, 0);
     gl.uniform1i(shaderProgram.useTextureUniform, 1);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer);
@@ -987,7 +1089,10 @@ function draw_teapot() {
     gl.vertexAttribPointer(shaderProgram.vertexUVAttribute, teapotVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, teapotVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.uniform1i(shaderProgram.useTextureUniform, 0);
+
+    
+    gl.uniform1i(shaderProgram.useTextureUniform, 2);
+
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotVertexIndexBuffer);
     gl.drawElements(gl.TRIANGLES, teapotVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
@@ -1038,7 +1143,7 @@ function draw_cylinder(color, intensity) {
         our movable object.
 */
 function drawScene() {
-    if (!textureLoaded || !teapotLoaded)
+    if (!textureLoaded || !teapotLoaded || !cubemapLoaded)
         return;
 
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -1059,11 +1164,22 @@ function drawScene() {
     mMatrix = mat4.scale(mMatrix, globalScaling);
     mMatrix = mat4.rotate(mMatrix, degToRad(Z_angle), [0, 1, 0]);
 
+    mat4.identity(v2wMatrix);
+    v2wMatrix = mat4.multiply(v2wMatrix, vMatrix); 
+    v2wMatrix = mat4.transpose(v2wMatrix);
+
     gl.uniform4f(shaderProgram.light_posUniform, light_pos[0], light_pos[1], light_pos[2], light_pos[3]);
     gl.uniform4f(shaderProgram.light_ambientUniform, light_ambient[0], light_ambient[1], light_ambient[2], 1.0);
     gl.uniform4f(shaderProgram.light_diffuseUniform, light_diffuse[0], light_diffuse[1], light_diffuse[2], 1.0);
     gl.uniform4f(shaderProgram.light_specularUniform, light_specular[0], light_specular[1], light_specular[2], 1.0);
 
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, leafTexture);
+    gl.uniform1i(shaderProgram.textureUniform, 0);
+
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubemapTexture);
+    gl.uniform1i(shaderProgram.cubeMapTextureUniform, 1);
 
     // Draw our scene
     //drawEnvironment();
@@ -1561,6 +1677,7 @@ function webGLStart() {
     shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+    shaderProgram.v2wMatrixUniform = gl.getUniformLocation(shaderProgram, "uV2WMatrix");
 
     shaderProgram.light_posUniform = gl.getUniformLocation(shaderProgram, "light_pos");
     shaderProgram.light_ambientUniform = gl.getUniformLocation(shaderProgram, "light_ambient");
@@ -1568,13 +1685,11 @@ function webGLStart() {
     shaderProgram.light_specularUniform = gl.getUniformLocation(shaderProgram, "light_specular");
 
     shaderProgram.textureUniform = gl.getUniformLocation(shaderProgram, "myTexture");
+    shaderProgram.cubeMapTextureUniform = gl.getUniformLocation(shaderProgram, "cubeMap");
     shaderProgram.useTextureUniform = gl.getUniformLocation(shaderProgram, "useTexture");
 
     // Initialize our VBOs
     initBuffers();
-
-    initTextures();
-    initJSON();
 
     // Set the clear color to be a sky blue for our scene
     gl.clearColor(0.0, 0.0, 1.0, 0.3);
@@ -1617,6 +1732,11 @@ function webGLStart() {
     mat4.identity(mvLeftFootMatrix);
 
     currentPart = personEnum.BODY;
+
+    initTextures();
+    initJSON();
+    initCubeMap();
+
     drawScene();
 }
 

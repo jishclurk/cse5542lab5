@@ -18,6 +18,7 @@
     uniform mat4 uVMatrix;
     uniform mat4 uPMatrix;
     uniform mat4 uNMatrix; 
+    uniform mat4 uV2WMatrix;  // eye to world 
 
     uniform vec4 light_pos; 
     uniform vec4 light_ambient; 
@@ -26,6 +27,7 @@
 
     uniform int useTexture;
     uniform sampler2D myTexture;
+    uniform samplerCube cubeMap;
 
     varying vec4 eye_pos;  //vertex position in eye space 
     varying vec3 v_normal;  // vertex normal
@@ -71,17 +73,26 @@
         else
             specular = vec4(0,0,0,1); 
 
-        if (useTexture <= 0) 
-        {
-            // Average the fragment color with the light calculated
-	        gl_FragColor = (0.5*vColor + 0.5*(ambient+diffuse+specular));
-        }
-        else
+        
+        else if (useTexture == 1)
         {
             vec4 texColor = texture2D(myTexture, texCoord);
             gl_FragColor = (ambient + diffuse) * texColor + specular;
         }
-
+        else if (useTexture == 2) 
+        {
+            vec4 env_color = vec4(1,0,0,1);
+            vec3 view_vector = normalize(vec3(vec4(0,0,0,1)-eye_pos));
+            ref = normalize(reflect(-view_vector, v_normal));           // in eye space
+	        ref = vec3(uV2WMatrix*vec4(ref,0));                         // convert to world space
+            env_color = textureCube(cubeMap, ref);
+            gl_FragColor = (ambient + diffuse) * env_color + specular;
+        }
+        else
+        {
+            // Average the fragment color with the light calculated
+	        gl_FragColor = (0.5*vColor + 0.5*(ambient+diffuse+specular));
+        }
     }
 </script>
 
@@ -103,6 +114,7 @@
     uniform mat4 uVMatrix;
     uniform mat4 uPMatrix;
     uniform mat4 uNMatrix; 
+    uniform mat4 uV2WMatrix;  // eye to world 
 
     uniform vec4 light_pos; 
     uniform vec4 light_ambient; 
@@ -111,6 +123,7 @@
 
     uniform int useTexture;
     uniform sampler2D myTexture;
+    uniform samplerCube cubeMap;
 
     varying vec4 eye_pos;  //vertex position in eye space 
     varying vec3 v_normal;  // vertex normal
