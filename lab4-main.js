@@ -961,6 +961,7 @@ function draw_cube(color, intensity) {
     nMatrix = mat4.transpose(nMatrix);
 
     setMatrixUniforms();
+    gl.uniform1i(shaderProgram.useTextureUniform, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, matAmbientBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexAmbientCoefAttribute, matAmbientBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -977,7 +978,7 @@ function draw_cube(color, intensity) {
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, cubeVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.uniform1i(shaderProgram.useTextureUniform, 0);
+    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
     gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
@@ -1000,6 +1001,7 @@ function draw_sphere(color, intensity) {
     nMatrix = mat4.transpose(nMatrix);
 
     setMatrixUniforms();
+    gl.uniform1i(shaderProgram.useTextureUniform, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, matAmbientBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexAmbientCoefAttribute, matAmbientBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -1016,7 +1018,7 @@ function draw_sphere(color, intensity) {
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, sphereVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, sphereVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.uniform1i(shaderProgram.useTextureUniform, 0);
+    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer);
     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
@@ -1033,6 +1035,7 @@ function draw_leaf_sphere() {
     nMatrix = mat4.transpose(nMatrix);
 
     setMatrixUniforms();
+    gl.uniform1i(shaderProgram.useTextureUniform, 1);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, matAmbientBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexAmbientCoefAttribute, matAmbientBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -1052,7 +1055,6 @@ function draw_leaf_sphere() {
     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexUVBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexUVAttribute, sphereVertexUVBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.uniform1i(shaderProgram.useTextureUniform, 1);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer);
     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
@@ -1069,6 +1071,7 @@ function draw_teapot() {
     nMatrix = mat4.transpose(nMatrix);
 
     setMatrixUniforms();
+    gl.uniform1i(shaderProgram.useTextureUniform, 2);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, matAmbientBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexAmbientCoefAttribute, matAmbientBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -1088,8 +1091,6 @@ function draw_teapot() {
     gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, teapotVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    
-    gl.uniform1i(shaderProgram.useTextureUniform, 2);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotVertexIndexBuffer);
     gl.drawElements(gl.TRIANGLES, teapotVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
@@ -1113,6 +1114,7 @@ function draw_cylinder(color, intensity) {
     nMatrix = mat4.transpose(nMatrix);
 
     setMatrixUniforms();
+    gl.uniform1i(shaderProgram.useTextureUniform, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, matAmbientBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexAmbientCoefAttribute, matAmbientBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -1129,7 +1131,7 @@ function draw_cylinder(color, intensity) {
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, cylinderVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, cylinderVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cylinderVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.uniform1i(shaderProgram.useTextureUniform, 0);
+    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cylinderVertexIndexBuffer);
     gl.drawElements(gl.TRIANGLES, cylinderVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
@@ -1219,42 +1221,6 @@ function drawEnvironment() {
 
     pushMatrix(mMatrix);
     mMatrix = mat4.scale(mMatrix, [4.0, 4.0, 4.0]);
-
-    // Draw 4 rectangles to represent the reays of light from the sun 
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.9, 0.4, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(95), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.65, 0.45, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(60), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.46, 0.65, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(30), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.42, 0.9, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(-10), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    // Draw the Sun
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.scale(mMatrix, [0.7, 0.7, 0.7]);
-    mMatrix = mat4.translate(mMatrix, [1.2, 1.2, 0.0]);
-    draw_sphere(colorEnum.YELLOW, lightCoefEnum.HIGH);
-    popMatrix(mMatrix);
 
     // Draw the tree trunk
     pushMatrix(mMatrix);
