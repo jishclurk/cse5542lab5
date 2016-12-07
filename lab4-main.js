@@ -535,7 +535,6 @@ function initCubeMap() {
     }
     cubemapTexture.back.src = "back.png";
 
-    console.log("loading cubemap texture....")
 }
 
 function handleCubemapTextureLoaded(texture) {
@@ -604,7 +603,6 @@ var teapotVertexColorBuffer;
 var teapotLoaded = false;
 
 function find_range(positions) {
-    console.log("hello!");
     xmin = xmax = positions[0];
     ymin = ymax = positions[1];
     zmin = zmax = positions[2];
@@ -622,11 +620,6 @@ function find_range(positions) {
     var minRange = xmax - xmin;
     if (ymax - ymin < minRange) minRange = ymax - ymin;
     if (zmax - zmin < minRange) minRange = zmax - zmin;
-
-
-    console.log("*****xmin = " + xmin + "xmax = " + xmax);
-    console.log("*****ymin = " + ymin + "ymax = " + ymax);
-    console.log("*****zmin = " + zmin + "zmax = " + zmax);
 
     return minRange;
 }
@@ -1226,6 +1219,42 @@ function drawEnvironment() {
 
     pushMatrix(mMatrix);
     mMatrix = mat4.scale(mMatrix, [4.0, 4.0, 4.0]);
+
+    // Draw 4 rectangles to represent the reays of light from the sun 
+    pushMatrix(mMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.9, 0.4, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(95), [0, 0, 1]);
+    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
+    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
+
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.65, 0.45, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(60), [0, 0, 1]);
+    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
+    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
+
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.46, 0.65, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(30), [0, 0, 1]);
+    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
+    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
+
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.42, 0.9, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(-10), [0, 0, 1]);
+    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
+    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
+
+    // Draw the Sun
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.scale(mMatrix, [0.7, 0.7, 0.7]);
+    mMatrix = mat4.translate(mMatrix, [1.2, 1.2, 0.0]);
+    draw_sphere(colorEnum.YELLOW, lightCoefEnum.HIGH);
+    popMatrix(mMatrix);
 
     // Draw the tree trunk
     pushMatrix(mMatrix);
