@@ -373,7 +373,8 @@ function initBuffers() {
     var x = 0.0;
     var y = 0.0;
     var z = 0.0;
-
+    var u = 0.0;
+    var v = 0.0;
 
     // Push Top and Bottom vertices
     sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(radius);
@@ -397,8 +398,13 @@ function initBuffers() {
 
             sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(z);
             sphereNormals.push(x); sphereNormals.push(y); sphereNormals.push(z);
-            sphereUV.push(0.5 + (Math.atan2(-2 * x, -2 * y) / (2 * Math.PI)));
-            sphereUV.push(0.5 - (Math.asin(-2 * z) / Math.PI));
+
+            u = 0.5 + (Math.atan2(-2 * x, -2 * y) / (2 * Math.PI));
+            v = 0.5 - (Math.asin(-2 * z) / Math.PI);
+
+            if (u > 0.5) u = 1 - u;
+
+            sphereUV.push(u); sphereUV.push(v);
         }
     }
 
