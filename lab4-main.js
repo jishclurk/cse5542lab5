@@ -1185,7 +1185,6 @@ function drawScene() {
     drawEnvironment();
     drawPerson();
 
-    //draw_leaf_sphere();
 }
 
 
@@ -1222,22 +1221,7 @@ function drawEnvironment() {
     pushMatrix(mMatrix);
     mMatrix = mat4.scale(mMatrix, [4.0, 4.0, 4.0]);
 
-    // Draw the tree trunk
-    pushMatrix(mMatrix);
-    mMatrix = mat4.scale(mMatrix, [0.25, 1.5, 0.25]);
-    mMatrix = mat4.translate(mMatrix, [-3.0, -0.1, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(90), [1, 0, 0]);
-    draw_cylinder(colorEnum.BROWN, lightCoefEnum.LOW);
-
-    // Draw the ground
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.scale(mMatrix, [2.0, 0.25, 1.0]);
-    mMatrix = mat4.translate(mMatrix, [0.0, -3.5, 0.0]);
-    draw_cube(colorEnum.GREEN, lightCoefEnum.LOW);
-
     // Draw the tree leaves as 3 green circles
-    mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.translate(mMatrix, [-1.0, 0.7, 0.0]);
     mMatrix = mat4.rotate(mMatrix, degToRad(270), [0, 0, 1]);   // Left most sphere
@@ -1260,6 +1244,21 @@ function drawEnvironment() {
     mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 1, 0]);
     mMatrix = mat4.scale(mMatrix, [0.65, 0.9, 1.0]);
     draw_leaf_sphere();
+
+    // Draw the tree trunk
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.scale(mMatrix, [0.25, 1.5, 0.25]);
+    mMatrix = mat4.translate(mMatrix, [-3.0, -0.1, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [1, 0, 0]);
+    draw_cylinder(colorEnum.BROWN, lightCoefEnum.LOW);
+
+    // Draw the ground
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.scale(mMatrix, [2.0, 0.25, 1.0]);
+    mMatrix = mat4.translate(mMatrix, [0.0, -3.5, 0.0]);
+    draw_cube(colorEnum.GREEN, lightCoefEnum.LOW);
 
 
     popMatrix();
