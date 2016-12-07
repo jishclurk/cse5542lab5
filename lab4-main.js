@@ -1334,6 +1334,12 @@ function drawPerson() {
     mMatrix = mat4.translate(mMatrix, [0.5, 0.0, 0.0]);
     mMatrix = mat4.multiply(mMatrix, mvRightForearmMatrix);
     mMatrix = mat4.translate(mMatrix, [0.6, 0.0, 0.0]);
+    pushMatrix(mMatrix);
+
+    mMatrix = mat4.translate(mMatrix, [-0.5, 0.0, 0.0]);
+    draw_teapot();
+
+    mMatrix = popMatrix();
     mMatrix = mat4.scale(mMatrix, [1.0, 0.2, 0.25]);
     draw_cube(colorEnum.TAN, lightCoefEnum.MEDIUM);
 
@@ -1359,12 +1365,6 @@ function drawPerson() {
     mMatrix = mat4.translate(mMatrix, [-0.5, 0.0, 0.0]);
     mMatrix = mat4.multiply(mMatrix, mvLeftForearmMatrix);
     mMatrix = mat4.translate(mMatrix, [-0.6, 0.0, 0.0]);
-    pushMatrix(mMatrix);
-
-    mMatrix = mat4.translate(mMatrix, [-0.5, 0.0, 0.0]);
-    draw_teapot();
-
-    mMatrix = popMatrix();
     mMatrix = mat4.scale(mMatrix, [1.0, 0.2, 0.25]);
     draw_cube(colorEnum.TAN, lightCoefEnum.MEDIUM);
 
