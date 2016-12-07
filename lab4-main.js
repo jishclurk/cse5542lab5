@@ -367,7 +367,7 @@ function initBuffers() {
     var sphereUV = [];
     var sphereNormals = [];
     var radius = 0.5;
-    var numSlices = 40;
+    var numSlices = 20;
     var numStacks = 20;
     var radians = (2 * Math.PI) / numSlices;
     var x = 0.0;
