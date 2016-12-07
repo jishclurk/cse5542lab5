@@ -542,7 +542,6 @@ function handleCubemapTextureLoaded(texture) {
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
@@ -1228,45 +1227,7 @@ function drawEnvironment() {
     pushMatrix(mMatrix);
     mMatrix = mat4.scale(mMatrix, [4.0, 4.0, 4.0]);
 
-    /*
-    // Draw 4 rectangles to represent the reays of light from the sun 
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.9, 0.4, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(95), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.65, 0.45, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(60), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.46, 0.65, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(30), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.translate(mMatrix, [0.42, 0.9, 0.0]);
-    mMatrix = mat4.rotate(mMatrix, degToRad(-10), [0, 0, 1]);
-    mMatrix = mat4.scale(mMatrix, [0.25, 0.03, 0.1]);
-    draw_cube(colorEnum.YELLOW, lightCoefEnum.HIGH);
-
-    // Draw the Sun
-    mMatrix = popMatrix();
-    pushMatrix(mMatrix);
-    mMatrix = mat4.scale(mMatrix, [0.7, 0.7, 0.7]);
-    mMatrix = mat4.translate(mMatrix, [1.2, 1.2, 0.0]);
-    draw_sphere(colorEnum.YELLOW, lightCoefEnum.HIGH);
-    */
-
     // Draw the tree trunk
-    //mMatrix = popMatrix();
     pushMatrix(mMatrix);
     mMatrix = mat4.scale(mMatrix, [0.25, 1.5, 0.25]);
     mMatrix = mat4.translate(mMatrix, [-3.0, -0.1, 0.0]);
@@ -1287,7 +1248,6 @@ function drawEnvironment() {
     mMatrix = mat4.rotate(mMatrix, degToRad(270), [0, 0, 1]);   // Left most sphere
     mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 1, 0]);
     mMatrix = mat4.scale(mMatrix, [0.75, 1.0, 1.0]);
-    //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
 
     mMatrix = popMatrix();
@@ -1296,7 +1256,6 @@ function drawEnvironment() {
     mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   // Top most sphere
     mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 1, 0]);
     mMatrix = mat4.scale(mMatrix, [0.75, 1.0, 1.0]);
-    //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
 
     mMatrix = popMatrix();
@@ -1305,7 +1264,6 @@ function drawEnvironment() {
     mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   // Right most sphere
     mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 1, 0]);
     mMatrix = mat4.scale(mMatrix, [0.65, 0.9, 1.0]);
-    //draw_sphere(colorEnum.GREEN, lightCoefEnum.LOW);
     draw_leaf_sphere();
 
 
