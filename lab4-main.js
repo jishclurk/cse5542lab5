@@ -1337,6 +1337,7 @@ function drawPerson() {
     pushMatrix(mMatrix);
 
     mMatrix = mat4.translate(mMatrix, [1.3, 0.0, 0.0]);
+    console.log(1.3);
     draw_teapot();
 
     mMatrix = popMatrix();
