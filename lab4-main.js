@@ -408,8 +408,6 @@ function initBuffers() {
         }
     }
 
-    console.log("test");
-
     // Top Circle Indices
     for (i = 0; i < numSlices - 1; i++) {
         sphereIndices.push(0); sphereIndices.push(i + 2); sphereIndices.push(i + 3);
@@ -433,7 +431,6 @@ function initBuffers() {
     }
     sphereIndices.push(1); sphereIndices.push(((numStacks - 2) * numSlices) + 2); sphereIndices.push(((numStacks - 1) * numSlices) + 1);
 
-    console.log(sphereUV);
 
     // Create the sphere buffers
     sphereVertexPositionBuffer = gl.createBuffer();
@@ -1191,10 +1188,10 @@ function drawScene() {
     gl.uniform1i(shaderProgram.cubeMapTextureUniform, 1);
 
     // Draw our scene
-    //drawEnvironment();
-    //drawPerson();
+    drawEnvironment();
+    drawPerson();
 
-    draw_leaf_sphere();
+    //draw_leaf_sphere();
 }
 
 
