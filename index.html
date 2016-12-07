@@ -83,8 +83,8 @@
         {
             vec4 env_color = vec4(1,0,0,1);
             vec3 view_vector = normalize(vec3(vec4(0,0,0,1)-eye_pos));
-            ref = normalize(reflect(-view_vector, v_normal));           // in eye space
-	        ref = vec3(uV2WMatrix*vec4(ref,0));                         // convert to world space
+            vec3 ref = normalize(reflect(-view_vector, v_normal));          // in eye space
+	        ref = vec3(uV2WMatrix*vec4(ref,0));                             // convert to world space
             env_color = textureCube(cubeMap, ref);
             gl_FragColor = (ambient + diffuse) * env_color + specular;
         }
