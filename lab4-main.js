@@ -646,8 +646,7 @@ function handleLoadedTeapot(teapotData) {
 
     teapotVertexTextureCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexTextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(teapotData.vertexTextureCoords),
-		  gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(teapotData.vertexTextureCoords), gl.STATIC_DRAW);
     teapotVertexTextureCoordBuffer.itemSize = 2;
     teapotVertexTextureCoordBuffer.numItems = teapotData.vertexTextureCoords.length / 2;
 
