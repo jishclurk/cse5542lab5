@@ -18,6 +18,16 @@ var cubeVertexColorBuffer;
 var cubeVertexIndexBuffer;
 var cubeVertexNormalBuffer;
 
+var cylinderVertexPositionBuffer;
+var cylinderVertexColorBuffer;
+var cylinderVertexIndexBuffer;
+var cylinderVertexNormalBuffer;
+
+var sphereVertexPositionBuffer;
+var sphereVertexColorBuffer;
+var sphereVertexUVBuffer;
+var sphereVertexIndexBuffer;
+var sphereVertexNormalBuffer;
 
 var matAmbientBuffer;
 var matDiffuseBuffer;
@@ -122,35 +132,35 @@ function initBuffers() {
 
     // Need to use 24 vertices for correct normals
     var cubeVertices = [
-        10, 10, 10,
-        -10, 10, 10,
-        10, -10, 10,
-        -10, -10, 10,
+        0.5, 0.5, 0.5,
+        -0.5, 0.5, 0.5,
+        0.5, -0.5, 0.5,
+        -0.5, -0.5, 0.5,
 
-        10, 10, -10,
-        -10, 10, -10,
-        10, -10, -10,
-        -10, -10, -10,
+        0.5, 0.5, -0.5,
+        -0.5, 0.5, -0.5,
+        0.5, -0.5, -0.5,
+        -0.5, -0.5, -0.5,
 
-        10, 10, 10,
-        -10, 10, 10,
-        10, 10, -10,
-        -10, 10, -10,
+        0.5, 0.5, 0.5,
+        -0.5, 0.5, 0.5,
+        0.5, 0.5, -0.5,
+        -0.5, 0.5, -0.5,
 
-        10, -10, 10,
-        -10, -10, 10,
-        10, -10, -10,
-        -10, -10, -10,
+        0.5, -0.5, 0.5,
+        -0.5, -0.5, 0.5,
+        0.5, -0.5, -0.5,
+        -0.5, -0.5, -0.5,
 
-        10, -10, 10,
-        10, 10, 10,
-        10, -10, -10,
-        10, 10, -10,
+        0.5, -0.5, 0.5,
+        0.5, 0.5, 0.5,
+        0.5, -0.5, -0.5,
+        0.5, 0.5, -0.5,
 
-        -10, -10, 10,
-        -10, 10, 10,
-        -10, -10, -10,
-        -10, 10, -10
+        -0.5, -0.5, 0.5,
+        -0.5, 0.5, 0.5,
+        -0.5, -0.5, -0.5,
+        -0.5, 0.5, -0.5
 
     ];
     cubeVertexPositionBuffer = gl.createBuffer();
@@ -233,6 +243,225 @@ function initBuffers() {
     cubeVertexColorBuffer.numItems = 24;
     setColorArray(cubeVertexColorBuffer, colorEnum.BLACK);
 
+
+
+    /*** CYLINDER BUFFER INITIALIZATION ***/
+
+    var cylinderVertices = [];
+    var cylinderIndices = [];
+    var cylinderNormals = []
+    var numSlices = 20;     // Can be changed to alter smoothness of circles
+    var numStacks = 20;
+    var topRadius = 0.5;
+    var bottomRadius = 0.5;
+    var height = 1;
+    var radians = (2 * Math.PI) / (numSlices - 1);
+    var x = 0.0;
+    var y = 0.0;
+    var z = 0.0;
+
+    // Push the top center vertex onto the array
+    cylinderVertices.push(x); cylinderVertices.push(y); cylinderVertices.push(height / 2);
+    cylinderNormals.push(0.0); cylinderNormals.push(0.0); cylinderNormals.push(1.0);
+
+    //Push the bottom center vertex onto the array
+    cylinderVertices.push(x); cylinderVertices.push(y); cylinderVertices.push(-height / 2);
+    cylinderNormals.push(0.0); cylinderNormals.push(0.0); cylinderNormals.push(-1.0);
+
+    
+    z = height / 2;
+    // Calculate and push the vertices around the circles edge for each stack
+    for (i = 0; i < numSlices; i++) {
+        x = topRadius * Math.cos(radians * i);
+        y = topRadius * Math.sin(radians * i);
+        cylinderVertices.push(x); cylinderVertices.push(y); cylinderVertices.push(z);
+        cylinderNormals.push(0.0); cylinderNormals.push(0.0); cylinderNormals.push(1.0);
+    }
+
+    // Calculate and push the vertices and normals for the middle vertices
+    for (j = 0; j < numStacks; j++)
+    {
+        for (i = 0; i < numSlices; i++)
+        {
+            stack_radius = topRadius + (j / numStacks) * (bottomRadius - topRadius);
+            cylinderVertices.push(stack_radius * Math.cos(radians * i));
+            cylinderVertices.push(stack_radius * Math.sin(radians * i));
+            cylinderVertices.push((height / 2) + (j / numStacks) * ((-height / 2) - (height / 2)));
+            cylinderNormals.push(stack_radius * Math.cos(radians * i));
+            cylinderNormals.push(stack_radius * Math.sin(radians * i));
+            cylinderNormals.push(0.0);
+        }
+    }
+
+    
+    z = -height / 2;
+    // Calculate and push the vertices around the circles edge for each stack
+    for (i = 0; i < numSlices; i++) {
+        x = bottomRadius * Math.cos(radians * i);
+        y = bottomRadius * Math.sin(radians * i);
+        cylinderVertices.push(x); cylinderVertices.push(y); cylinderVertices.push(z);
+        cylinderNormals.push(0.0); cylinderNormals.push(0.0); cylinderNormals.push(-1.0);
+    }
+
+    
+    // Top Circle Indices
+    for (i = 0; i < numSlices - 1; i++) {
+        cylinderIndices.push(0); cylinderIndices.push(i + 2); cylinderIndices.push(i + 3);
+    }
+    cylinderIndices.push(0); cylinderIndices.push(2); cylinderIndices.push(numSlices + 1);
+    
+
+    // Middle circle indices
+    for (j = 0; j < numStacks; j++)
+    {
+        for (i = 0; i <= numSlices; i++)
+        {
+            cylinderIndices.push(numSlices + 2 + (j + 1) * numSlices + (i % numSlices));
+            cylinderIndices.push(numSlices + 2 + j * numSlices + (i % numSlices));
+            cylinderIndices.push(numSlices + 2 + j * numSlices + ((i + 1) % numSlices));
+            cylinderIndices.push(numSlices + 2 + (j + 1) * numSlices + (i % numSlices));
+            cylinderIndices.push(numSlices + 2 + j * numSlices + ((i + 1) % numSlices));
+            cylinderIndices.push(numSlices + 2 + (j + 1) * numSlices + ((i + 1) % numSlices));
+        }
+    }
+
+    
+    // Bottom Circle Indices
+    for (i = 0; i < numSlices - 1; i++) {
+        cylinderIndices.push(1); cylinderIndices.push(numSlices + (numStacks * numSlices) + i + 2); cylinderIndices.push(numSlices + (numStacks * numSlices) + i + 3);
+    }
+    cylinderIndices.push(1); cylinderIndices.push(numSlices + (numStacks * numSlices) + 2); cylinderIndices.push(2 * numSlices + (numStacks * numSlices) + 1);
+    
+
+    // Initialize and set the circle's vertex VBO to the calculated array
+    cylinderVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cylinderVertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cylinderVertices), gl.STATIC_DRAW);
+    cylinderVertexPositionBuffer.itemSize = 3;
+    cylinderVertexPositionBuffer.numItems = 2 + numSlices * 2 + (numStacks * numSlices);
+
+    cylinderVertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cylinderVertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cylinderNormals), gl.STATIC_DRAW);
+    cylinderVertexNormalBuffer.itemSize = 3;
+    cylinderVertexNormalBuffer.numItems = 2 + numSlices * 2 + (numStacks * numSlices);
+
+    cylinderVertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cylinderVertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cylinderIndices), gl.STATIC_DRAW);
+    cylinderVertexIndexBuffer.itemSize = 1;
+    cylinderVertexIndexBuffer.numItems = 6 * numSlices + 6 * (numStacks * (numSlices + 1));
+
+    // Initialize and set the circle's color VBO with an inital color of Black
+    cylinderVertexColorBuffer = gl.createBuffer();
+    cylinderVertexColorBuffer.itemSize = 4;
+    cylinderVertexColorBuffer.numItems = 2 + numSlices * 2 + (numStacks * numSlices);
+
+    setColorArray(cylinderVertexColorBuffer, colorEnum.BLACK);
+
+
+    /*** SPHERE BUFFER INITIALIZATION ***/
+
+    var sphereVertices = [];
+    var sphereIndices = [];
+    var sphereUV = [];
+    var sphereNormals = [];
+    var radius = 0.5;
+    var numSlices = 20;
+    var numStacks = 20;
+    var radians = (2 * Math.PI) / numSlices;
+    var x = 0.0;
+    var y = 0.0;
+    var z = 0.0;
+    var u = 0.0;
+    var v = 0.0;
+
+    // Push Top and Bottom vertices
+    sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(radius);
+    sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(-radius);
+    sphereNormals.push(x); sphereNormals.push(y); sphereNormals.push(1.0);
+    sphereNormals.push(x); sphereNormals.push(y); sphereNormals.push(-1.0);
+    sphereUV.push(0.5 + (Math.atan2(0, 0) / (2 * Math.PI)));
+    sphereUV.push(0.5 - (Math.asin(-1) / Math.PI));
+    sphereUV.push(0.5 + (Math.atan2(0, 0) / (2 * Math.PI)));
+    sphereUV.push(0.5 - (Math.asin(1) / Math.PI));
+
+    // Push there vertices for intermediate circles throughout the spheres
+    for (j = 1; j < numStacks; j++)
+    {
+        z = radius - 2 * (radius * (j / (numStacks)));
+        
+        for (i = 0; i < numSlices; i++)
+        {
+            x = Math.sqrt((radius * radius) - (z * z)) * Math.cos(radians * i);
+            y = Math.sqrt((radius * radius) - (z * z)) * Math.sin(radians * i);
+
+            sphereVertices.push(x); sphereVertices.push(y); sphereVertices.push(z);
+            sphereNormals.push(x); sphereNormals.push(y); sphereNormals.push(z);
+
+            u = 0.5 + (Math.atan2(-2 * x, -2 * y) / (2 * Math.PI));
+            v = 0.5 - (Math.asin(-2 * z) / Math.PI);
+
+            if (u > 0.5) u = 1 - u;
+
+            sphereUV.push(u); sphereUV.push(v);
+        }
+    }
+
+    // Top Circle Indices
+    for (i = 0; i < numSlices - 1; i++) {
+        sphereIndices.push(0); sphereIndices.push(i + 2); sphereIndices.push(i + 3);
+    }
+    sphereIndices.push(0); sphereIndices.push(2); sphereIndices.push(numSlices + 1);
+
+    // Indices for triangles that make up the squares for the body of the sphere
+    for (j = 0; j < numStacks - 2; j++) {
+
+        for (i = 0; i < numSlices - 1; i++) {
+            sphereIndices.push((j * numSlices) + i + 2); sphereIndices.push((j * numSlices) + i + 3); sphereIndices.push(((j + 1) * numSlices) + i + 3);
+            sphereIndices.push((j * numSlices) + i + 2); sphereIndices.push(((j + 1) * numSlices) + i + 2); sphereIndices.push(((j + 1) * numSlices) + i + 3);
+        }
+        sphereIndices.push((j * numSlices) + numSlices + 1); sphereIndices.push((j * numSlices) + 2); sphereIndices.push(((j + 1) * numSlices) + 2);
+        sphereIndices.push((j * numSlices) + numSlices + 1); sphereIndices.push(((j + 1) * numSlices) + numSlices + 1); sphereIndices.push(((j + 1) * numSlices) + 2);
+    }
+
+    // Bottom Circle Indices
+    for (i = 0; i < numSlices - 1; i++) {
+        sphereIndices.push(1); sphereIndices.push(((numStacks - 2) * numSlices) + i + 2); sphereIndices.push(((numStacks - 2) * numSlices) + i + 3);
+    }
+    sphereIndices.push(1); sphereIndices.push(((numStacks - 2) * numSlices) + 2); sphereIndices.push(((numStacks - 1) * numSlices) + 1);
+
+
+    // Create the sphere buffers
+    sphereVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereVertices), gl.STATIC_DRAW);
+    sphereVertexPositionBuffer.itemSize = 3;
+    sphereVertexPositionBuffer.numItems = 2 + (numSlices * (numStacks - 1));
+
+    sphereVertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereNormals), gl.STATIC_DRAW);
+    sphereVertexNormalBuffer.itemSize = 3;
+    sphereVertexNormalBuffer.numItems = 2 + (numSlices * (numStacks - 1));
+
+    sphereVertexUVBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexUVBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereUV), gl.STATIC_DRAW);
+    sphereVertexUVBuffer.itemSize = 2;
+    sphereVertexUVBuffer.numItems = 2 + (numSlices * (numStacks - 1));
+
+    sphereVertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(sphereIndices), gl.STATIC_DRAW);
+    sphereVertexIndexBuffer.itemSize = 1;
+    sphereVertexIndexBuffer.numItems = (6 * numSlices * (numStacks - 2)) + (6 * numSlices);
+
+    sphereVertexColorBuffer = gl.createBuffer();
+    sphereVertexColorBuffer.itemSize = 4;
+    sphereVertexColorBuffer.numItems = 2 + (numSlices * (numStacks - 1));
+
+    setColorArray(sphereVertexColorBuffer, colorEnum.BLACK);
 }
 
 
@@ -332,6 +561,25 @@ function handleCubemapTextureLoaded(texture) {
     cubemapLoaded = true;
     drawScene();
 }
+
+
+function initTextures() {
+    leafTexture = gl.createTexture();
+    leafTexture.image = new Image();
+    leafTexture.image.onload = function () { handleTextureLoaded(leafTexture); }
+    leafTexture.image.src = "leaf.png";
+}
+
+function handleTextureLoaded(texture) {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    textureLoaded = true;
+    drawScene();
+}
+
 
 
 function initJSON() {
@@ -892,7 +1140,7 @@ function draw_cylinder(color, intensity) {
         our movable object.
 */
 function drawScene() {
-    if (!teapotLoaded || !cubemapLoaded)
+    if (!textureLoaded || !teapotLoaded || !cubemapLoaded)
         return;
 
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -932,11 +1180,275 @@ function drawScene() {
 
 
     // Draw our scene
-    draw_cube(colorEnum.WHITE, lightCoefEnum.MEDIUM);
+    drawEnvironment();
+    drawPerson();
 
 }
 
 
+/*
+    pushMatrix function
+        Pushes a model-view matrix onto our stack, in order to save it when performing hierarchical transformations.
+*/
+function pushMatrix(matrix) {
+    var copy = mat4.create();
+    mat4.set(matrix, copy);
+    mvMatrixStack.push(copy);
+}
+
+/*
+    popMatrix function
+        Pops a model-view matrix off of our stack and returns it
+*/
+function popMatrix() {
+    if (mvMatrixStack.length == 0) {
+        throw "Invalid popMatrix!";
+    }
+    var copy = mvMatrixStack.pop();
+    return copy;
+}
+
+
+/*
+    drawEnvironment function
+        Handles the drawing of the static shapes that are added in the 
+        background to make the environment more interesting.
+*/
+function drawEnvironment() {
+
+    pushMatrix(mMatrix);
+    mMatrix = mat4.scale(mMatrix, [4.0, 4.0, 4.0]);
+
+    // Draw the tree trunk
+    pushMatrix(mMatrix);
+    mMatrix = mat4.scale(mMatrix, [0.25, 1.5, 0.25]);
+    mMatrix = mat4.translate(mMatrix, [-3.0, -0.1, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [1, 0, 0]);
+    draw_cylinder(colorEnum.BROWN, lightCoefEnum.LOW);
+
+    // Draw the ground
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.scale(mMatrix, [2.0, 0.25, 1.0]);
+    mMatrix = mat4.translate(mMatrix, [0.0, -3.5, 0.0]);
+    draw_cube(colorEnum.GREEN, lightCoefEnum.LOW);
+
+    // Draw the tree leaves as 3 green circles
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.translate(mMatrix, [-1.0, 0.7, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(270), [0, 0, 1]);   // Left most sphere
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 1, 0]);
+    mMatrix = mat4.scale(mMatrix, [0.75, 1.0, 1.0]);
+    draw_leaf_sphere();
+
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.translate(mMatrix, [-0.6, 1.0, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   // Top most sphere
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 1, 0]);
+    mMatrix = mat4.scale(mMatrix, [0.75, 1.0, 1.0]);
+    draw_leaf_sphere();
+
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+    mMatrix = mat4.translate(mMatrix, [-0.5, 0.6, 0.0]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 0, 1]);   // Right most sphere
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [0, 1, 0]);
+    mMatrix = mat4.scale(mMatrix, [0.65, 0.9, 1.0]);
+    draw_leaf_sphere();
+
+
+    popMatrix();
+    mMatrix = popMatrix();
+}
+
+
+/*
+    drawPerson function
+        Handles drawing the movable person object in the scene, based on the model
+        view matrices set by the key and mouse listeners that determine the transformations
+        of each body part.
+*/
+function drawPerson() {
+
+    // Set the objects initial position in the scene
+    mMatrix = mat4.translate(mMatrix, [0.5, 0.7, 0.0]);
+
+    // Multiply the mMatrix by the full body transformation matrix first
+    mMatrix = mat4.multiply(mMatrix, mvBodyMatrix);
+    pushMatrix(mMatrix);
+
+
+    // Draw rectangles for the right arm
+
+    //   - First push the transformations for the right arm
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.75, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvRightArmMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.5, 0.0, 0.0]);
+    pushMatrix(mMatrix);
+
+    //   - Draw the right forearm, which is dependent on the right arm transformations
+    mMatrix = mat4.translate(mMatrix, [0.5, 0.0, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvRightForearmMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.6, 0.0, 0.0]);
+    pushMatrix(mMatrix);
+
+    mMatrix = mat4.translate(mMatrix, [1.3, 0.0, 0.0]);
+    draw_teapot();
+
+    mMatrix = popMatrix();
+    mMatrix = mat4.scale(mMatrix, [1.0, 0.2, 0.25]);
+    draw_cube(colorEnum.TAN, lightCoefEnum.MEDIUM);
+
+    //   - Draw the second right arm rectangle (one closer to the body)
+    mMatrix = popMatrix();
+    mMatrix = mat4.scale(mMatrix, [1.3, 0.25, 0.3]);
+    draw_cube(colorEnum.RED, lightCoefEnum.MEDIUM);
+
+
+    // Draw rectangles for the left arm
+
+    //   - First, get the body mMatrix matrix the arm depends on
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+
+    //   - Push the transformations for the left arm
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.75, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvLeftArmMatrix);
+    mMatrix = mat4.translate(mMatrix, [-0.5, 0.0, 0.0]);
+    pushMatrix(mMatrix);
+
+    //   - Draw the left forearm, which is dependent on the right arm transformations
+    mMatrix = mat4.translate(mMatrix, [-0.5, 0.0, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvLeftForearmMatrix);
+    mMatrix = mat4.translate(mMatrix, [-0.6, 0.0, 0.0]);
+    mMatrix = mat4.scale(mMatrix, [1.0, 0.2, 0.25]);
+    draw_cube(colorEnum.TAN, lightCoefEnum.MEDIUM);
+
+    //   - Draw the second left arm rectangle (one closer to the body)
+    mMatrix = popMatrix();
+    mMatrix = mat4.scale(mMatrix, [1.3, 0.25, 0.3]);
+    draw_cube(colorEnum.RED, lightCoefEnum.MEDIUM);
+
+
+    // Draw the Right Leg
+
+    //   - First, get the body mMatrix matrix the leg depends on
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+
+    //   - Calculate and push the transform matrix for the whole leg
+    mMatrix = mat4.translate(mMatrix, [0.25, -2.0, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvRightLegMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.55, 0.0]);
+    pushMatrix(mMatrix);
+
+    //   - Calculate and push the foot matrix that depends on the leg matrix
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.5, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvRightFootMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.3, 0.0]);
+    pushMatrix(mMatrix);
+
+    //   - Draw black rectangle for shoe
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.3, 0.3]);
+    mMatrix = mat4.scale(mMatrix, [0.2, 0.15, 0.4]);
+    draw_cube(colorEnum.BLACK, lightCoefEnum.MEDIUM);
+
+    //   - Draw lower part of the leg
+    mMatrix = popMatrix();
+    mMatrix = mat4.scale(mMatrix, [0.3, 0.6, 0.3]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [1, 0, 0]);
+    draw_cylinder(colorEnum.BLUE, lightCoefEnum.MEDIUM);
+
+    //   - Draw upper part of the leg
+    mMatrix = popMatrix();
+    mMatrix = mat4.scale(mMatrix, [0.4, 1.0, 0.3]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [1, 0, 0]);
+    draw_cylinder(colorEnum.BLUE, lightCoefEnum.MEDIUM);
+
+
+    // Draw the Left Leg
+
+    //   - First, get the body mMatrix matrix the leg depends on
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+
+    //   - Calculate and push the transform matrix for the whole leg
+    mMatrix = mat4.translate(mMatrix, [-0.25, -2.0, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvLeftLegMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.55, 0.0]);
+    pushMatrix(mMatrix);
+
+    //   - Calculate and push the foot matrix that depends on the leg matrix
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.5, 0.0]);
+    mMatrix = mat4.multiply(mMatrix, mvLeftFootMatrix);
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.3, 0.0]);
+    pushMatrix(mMatrix);
+
+    //   - Draw black rectangle for shoe
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.3, 0.3]);
+    mMatrix = mat4.scale(mMatrix, [0.2, 0.15, 0.4]);
+    draw_cube(colorEnum.BLACK, lightCoefEnum.MEDIUM);
+
+    //   - Draw lower part of the leg
+    mMatrix = popMatrix();
+    mMatrix = mat4.scale(mMatrix, [0.3, 0.6, 0.3]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [1, 0, 0]);
+    draw_cylinder(colorEnum.BLUE, lightCoefEnum.MEDIUM);
+
+    //   - Draw upper part of the leg
+    mMatrix = popMatrix();
+    mMatrix = mat4.scale(mMatrix, [0.4, 1.0, 0.3]);
+    mMatrix = mat4.rotate(mMatrix, degToRad(90), [1, 0, 0]);
+    draw_cylinder(colorEnum.BLUE, lightCoefEnum.MEDIUM);
+
+
+    // Draw Body 
+    mMatrix = popMatrix();
+    pushMatrix(mMatrix);
+
+    mMatrix = mat4.scale(mMatrix, [1.0, 2.0, 1.0]);
+    mMatrix = mat4.translate(mMatrix, [0.0, -0.7, 0.0]);
+    draw_sphere(colorEnum.RED, lightCoefEnum.MEDIUM);
+
+    // Draw Head
+    mMatrix = popMatrix();
+    draw_sphere(colorEnum.TAN, lightCoefEnum.MEDIUM);
+}
+
+
+/*
+    getCurrentMVMatrix function
+        Used in the mouse and key handling functions, retrieve the 
+        model view matrix for the corresponding part of the movable object 
+        that is currently selected.
+*/
+function getCurrentMVMatrix() {
+    switch (currentPart) {
+        case personEnum.BODY:
+            return mvBodyMatrix;
+        case personEnum.LEFTARM:
+            return mvLeftArmMatrix;
+        case personEnum.LEFTFOOT:
+            return mvLeftFootMatrix;
+        case personEnum.LEFTFOREARM:
+            return mvLeftForearmMatrix;
+        case personEnum.LEFTLEG:
+            return mvLeftLegMatrix;
+        case personEnum.RIGHTARM:
+            return mvRightArmMatrix;
+        case personEnum.RIGHTFOOT:
+            return mvRightFootMatrix;
+        case personEnum.RIGHTFOREARM:
+            return mvRightForearmMatrix;
+        case personEnum.RIGHTLEG:
+            return mvRightLegMatrix;
+        default:
+            console.error("currentPart is incorrectly set");
+            return mvBodyMatrix;
+    }
+}
 
 
 
@@ -1186,6 +1698,7 @@ function webGLStart() {
 
     currentPart = personEnum.BODY;
 
+    initTextures();
     initJSON();
     initCubeMap();
 
