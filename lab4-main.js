@@ -408,6 +408,8 @@ function initBuffers() {
         }
     }
 
+    console.log("test");
+
     // Top Circle Indices
     for (i = 0; i < numSlices - 1; i++) {
         sphereIndices.push(0); sphereIndices.push(i + 2); sphereIndices.push(i + 3);
